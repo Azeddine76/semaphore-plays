@@ -1,6 +1,10 @@
 ---
 - hosts: asa
   gather_facts: false
+  collections:
+    - cisco.asa
+  become: true
+  become_method: enable
   connection: ansible.netcommon.network_cli
 
   tasks:
