@@ -6,6 +6,7 @@
     - cisco.asa
   become: true
   become_method: enable
+  ansible_network_os: cisco.asa.asa
   connection: ansible.netcommon.network_cli
 
   tasks:
