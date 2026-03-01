@@ -1,0 +1,17 @@
+---
+- hosts: asa
+  gather_facts: false
+  connection: ansible.netcommon.network_cli
+
+  tasks:
+    - name: SHOW VERSION
+      cisco.asa.asa_command:
+        commands:
+          - show version
+      register: version
+
+    - debug: var=version.stdout_lines
+    - name: Save version output to file
+      copy:
+        content: "{{ version.stdout[0] }}"
+        dest: "asa_version_output.txt"
