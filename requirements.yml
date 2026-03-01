@@ -4,8 +4,6 @@ collections:
   - community.general
   - cisco.asa
   - ansible.netcommon
-  - ansible.builtin
-  - ansible.posix
   # Install a specific version from Ansible Galaxy
   - name: community.general
-    version: "3.0.0"  
+    version: "3.0.0"
