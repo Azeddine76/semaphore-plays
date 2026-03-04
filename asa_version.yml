@@ -18,6 +18,38 @@
       register: version
 
     - debug: var=version.stdout_lines
+
+    - name: Gather facts
+      cisco.asa.asa_facts:
+        - gather_subset: all
+      register: asa_facts
+
+    - name: configure ASA interface with standby
+      cisco.asa.asa_config:
+        lines:
+          - description my cloud interface
+          - nameif cloud13
+          - security-level 50
+          - ip address 10.10.10.1 255.255.255.0 standby 10.10.10.2
+        parents: [interface GigabitEthernet0/1]
+      register: interface
+    - name: Show changes to interface from task above
+      ansible.builtin.debug:
+        var: interface
+
+    - name: configurable backup path
+      cisco.asa.asa_config:
+        lines:
+          - access-group cloud-acl_access_in in interface cloud13
+      backup: true
+      backup_options:
+        filename: backup.cfg
+        dir_path: /home/user
+
+    - name: save running to startup when modified
+      cisco.asa.asa_config:
+        save_when: modified
+
     - name: Save version output to file
       copy:
         content: "{{ version.stdout[0] }}"
