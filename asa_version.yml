@@ -21,7 +21,8 @@
 
     - name: Gather facts
       cisco.asa.asa_facts:
-        gather_subset: all
+        #gather_subset: all
+        gather_subset: config
         passwords: true
       register: asa_facts
 
