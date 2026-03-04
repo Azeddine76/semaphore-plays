@@ -43,8 +43,8 @@
           - access-group cloud-acl_access_in in interface cloud13
         backup: true
         backup_options:
-          filename: backup.cfg
-          dir_path: /home/user
+          filename: {{ asa_facts.ansible_facts.ansible_net_hostname }}.cfg
+          dir_path: /home/azeddine/backup
 
     - name: save running to startup when modified
       cisco.asa.asa_config:
