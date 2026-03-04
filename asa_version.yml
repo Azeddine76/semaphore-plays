@@ -45,7 +45,7 @@
         parents: [access-list global_access]
         backup: true
         backup_options:
-          filename: {{ asa_facts.ansible_facts.ansible_net_hostname }}.cfg
+          filename: "{{ asa_facts.ansible_facts.ansible_net_hostname }}.cfg"
           dir_path: /home/azeddine/backup
 
     - name: save running to startup when modified
