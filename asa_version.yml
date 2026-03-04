@@ -21,7 +21,7 @@
 
     - name: Gather facts
       cisco.asa.asa_facts:
-        - gather_subset: all
+        gather_subset: all
       register: asa_facts
 
     - name: configure ASA interface with standby
