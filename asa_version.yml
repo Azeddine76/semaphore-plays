@@ -56,3 +56,8 @@
       copy:
         content: "{{ version.stdout[0] }}"
         dest: "/tmp/semaphore/backup/asa_version_output.txt"
+
+    - name: Save Gather output to file
+      copy:
+        content: "{{ asa_facts.stdout[0] }}"
+        dest: "/tmp/semaphore/backup/asa_facts_output.txt"
