@@ -55,4 +55,4 @@
     - name: Save version output to file
       copy:
         content: "{{ version.stdout[0] }}"
-        dest: "/home/azeddine/backup/asa_version_output.txt"
+        dest: "/tmp/semaphore/backup/asa_version_output.txt"
