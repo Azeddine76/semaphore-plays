@@ -43,7 +43,6 @@
           - configure terminal
           - access-list global_access extended permit ip any any
           - access-group global_access global
-        parents: [access-list global_access]
         backup: true
         backup_options:
           filename: "{{ asa_facts.ansible_facts.ansible_net_hostname }}.cfg"
