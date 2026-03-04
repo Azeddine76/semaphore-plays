@@ -22,6 +22,7 @@
     - name: Gather facts
       cisco.asa.asa_facts:
         gather_subset: all
+        passwords: true
       register: asa_facts
 
     - name: configure ASA interface with standby
@@ -59,5 +60,5 @@
 
     - name: Save Gather output to file
       copy:
-        content: "{{ asa_facts.stdout[0] }}"
-        dest: "/tmp/semaphore/backup/asa_facts_output.txt"
+        content: "{{ asa_facts | to_nice_json }}"
+        dest: "/tmp/semaphore/backup/{{ inventory_hostname }}_asa_facts.json"
