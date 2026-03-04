@@ -21,8 +21,8 @@
 
     - name: Gather facts
       cisco.asa.asa_facts:
-        #gather_subset: all
-        gather_subset: config
+        gather_subset: all
+        #gather_subset: config
         passwords: true
       register: asa_facts
 
@@ -61,8 +61,8 @@
 
     - name: Save Gather output to file
       copy:
-        #content: "{{ asa_facts | to_nice_json }}"
-        #dest: "/tmp/semaphore/backup/{{ inventory_hostname }}_asa_facts.json"
-        content: "{{ ansible_net_config }}"
-        dest: "/tmp/semaphore/backup/{{ ansible_net_hostname }}-config.txt"
+        content: "{{ asa_facts | to_nice_json }}"
+        dest: "/tmp/semaphore/backup/{{ ansible_net_hostnamee }}_asa_facts.json"
+        #content: "{{ ansible_net_config }}"
+        #dest: "/tmp/semaphore/backup/{{ ansible_net_hostname }}-config.txt"
       delegate_to: localhost
