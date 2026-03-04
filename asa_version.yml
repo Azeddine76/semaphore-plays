@@ -41,10 +41,10 @@
       cisco.asa.asa_config:
         lines:
           - access-group cloud-acl_access_in in interface cloud13
-      backup: true
-      backup_options:
-        filename: backup.cfg
-        dir_path: /home/user
+        backup: true
+        backup_options:
+          filename: backup.cfg
+          dir_path: /home/user
 
     - name: save running to startup when modified
       cisco.asa.asa_config:
