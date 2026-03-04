@@ -62,7 +62,7 @@
     - name: Save Gather output to file
       copy:
         #content: "{{ asa_facts | to_nice_json }}"
-        content: "{{ asa_facts | from_json }}"
+        content: "{{ asa_facts | to_nice_yaml }}"
         #dest: "/tmp/semaphore/backup/{{ asa_facts.ansible_facts.ansible_net_hostname }}_asa_facts.json"
         dest: "/tmp/semaphore/backup/{{ asa_facts.ansible_facts.ansible_net_hostname }}_asa_facts.yml"
         #content: "{{ ansible_net_config }}"
