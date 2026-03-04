@@ -60,5 +60,8 @@
 
     - name: Save Gather output to file
       copy:
-        content: "{{ asa_facts | to_nice_json }}"
-        dest: "/tmp/semaphore/backup/{{ inventory_hostname }}_asa_facts.json"
+        #content: "{{ asa_facts | to_nice_json }}"
+        #dest: "/tmp/semaphore/backup/{{ inventory_hostname }}_asa_facts.json"
+        content: "{{ ansible_net_config }}"
+        dest: "/tmp/semaphore/backup/{{ ansible_net_hostname }}-config.txt"
+      delegate_to: localhost
