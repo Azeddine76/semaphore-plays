@@ -48,7 +48,8 @@
         backup: true
         backup_options:
           filename: "{{ asa_facts.ansible_facts.ansible_net_hostname }}.cfg"
-          dir_path: /tmp/semaphore/backup
+          #dir_path: /tmp/semaphore/backup
+          dir_path: /tmp/
 
     - name: save running to startup when modified
       cisco.asa.asa_config:
@@ -57,14 +58,16 @@
     - name: Save version output to file
       copy:
         content: "{{ version.stdout[0] }}"
-        dest: "/tmp/semaphore/backup/asa_version_output.txt"
+        #dest: "/tmp/semaphore/backup/asa_version_output.txt"
+        dest: "/tmp/asa_version_output.txt"
 
     - name: Save Gather output to file
       copy:
         #content: "{{ asa_facts | to_nice_json }}"
         content: "{{ asa_facts | to_nice_yaml }}"
         #dest: "/tmp/semaphore/backup/{{ asa_facts.ansible_facts.ansible_net_hostname }}_asa_facts.json"
-        dest: "/tmp/semaphore/backup/{{ asa_facts.ansible_facts.ansible_net_hostname }}_asa_facts.yml"
+        #dest: "/tmp/semaphore/backup/{{ asa_facts.ansible_facts.ansible_net_hostname }}_asa_facts.yml"
+        dest: "/tmp/{{ asa_facts.ansible_facts.ansible_net_hostname }}_asa_facts.yml"
         #content: "{{ ansible_net_config }}"
         #dest: "/tmp/semaphore/backup/{{ ansible_net_hostname }}-config.txt"
       delegate_to: localhost
