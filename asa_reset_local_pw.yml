@@ -1,0 +1,23 @@
+---
+- name: Change Cisco ASA Admin Password
+  hosts: asa
+  connection: network_cli
+  gather_facts: no
+  vars:
+    ansible_network_os: cisco.asa.asa
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_become: true
+    ansible_become_method: enable
+
+  tasks:
+    - name: Update admin user password
+      cisco.asa.asa_config:
+        lines:
+          - username loCal password cisco123! privilege 15
+      register: password_change
+    - name: Show password change result
+      ansible.builtin.debug:
+        var: password_change
+    - name: Save running configuration to startup configuration
+      cisco.asa.asa_config:
+        save_when: modified
