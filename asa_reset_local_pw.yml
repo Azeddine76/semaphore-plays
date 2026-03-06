@@ -15,9 +15,10 @@
         lines:
           - username loCal password cisco123! privilege 15
       register: password_change
-    - name: Show password change result
-      ansible.builtin.debug:
-        var: password_change
+    #    - name: Show password change result
+    #      ansible.builtin.debug:
+    #        var: password_change
     - name: Save running configuration to startup configuration
       cisco.asa.asa_config:
         save_when: modified
+...
