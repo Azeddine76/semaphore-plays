@@ -1,0 +1,30 @@
+{# Header / Doku optional #}
+{# Time-range Definition(en) – hier ein Beispiel #}
+time-range 01.03.2025
+ periodic weekdays 08:00 to 18:00
+
+{# ACL-Regeln – jede Regel besteht aus remark + ACE #}
+{% for item in acl_rules %}
+access-list {{ acl_name }} remark {{ "%03d" | format(item.id) }} - {{ item.remark }}
+access-list {{ acl_name }} extended {{ item.action }} {{ item.proto }}
+  {# Source #}
+  {% if item.src_ip == 'any' %}
+    any
+  {% else %}
+    {{ item.src_ip }} {{ item.src_mask }}
+  {% endif %}
+  {# Destination #}
+  {% if item.dst_ip == 'any' %}
+    any
+  {% else %}
+    {{ item.dst_ip }} {{ item.dst_mask }}
+  {% endif %}
+  {# Port (nur bei TCP/UDP sinnvoll) #}
+  {% if item.port is not none %}
+    eq {{ item.port }}
+  {% endif %}
+  {# Time-range optional #}
+  {% if item.time_range %}
+    time-range {{ item.time_range }}
+  {% endif %}
+{% endfor %}

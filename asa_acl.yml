@@ -1,0 +1,25 @@
+---
+- name: Configure ASA ACL from JSON via Jinja2 template
+  hosts: asa
+  connection: network_cli
+  gather_facts: no
+
+  vars:
+    acl_name: global_access
+
+  tasks:
+
+    - name: Render ASA ACL config from template into a variable
+      set_fact:
+        asa_acl_rendered: "{{ lookup('template', 'templates/asa_acl.j2') }}"
+
+    - name: Push ACL (500+ Regeln) to ASA
+      asa_config:
+        lines: "{{ asa_acl_rendered.split('\n') }}"
+        match: none
+
+    - name: Apply ACL to interface
+      asa_config:
+        lines:
+          - "access-group {{ acl_name }} global"
+        match: none
