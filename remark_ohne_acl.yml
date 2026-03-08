@@ -1,0 +1,66 @@
+---
+- name: Remove orphan remarks from ASA ACL
+  hosts: asa
+  connection: network_cli
+  gather_facts: no
+  collections:
+    - community.general
+    - cisco.asa
+
+  vars:
+    acl_name: global_access
+    ansible_network_os: cisco.asa.asa
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_become: true
+    ansible_become_method: enable
+
+  vars:
+    acl_name: global_access
+
+  tasks:
+
+    - name: Get ACL from ASA
+      asa_config:
+        commands:
+          - show access-list {{ acl_name }}
+      register: acl_output
+
+    - name: Convert ACL output into list of lines
+      set_fact:
+        acl_lines: "{{ acl_output.stdout[0].split('\n') | map('trim') | list }}"
+
+    - name: Find orphan remarks (remarks without following ACE)
+      set_fact:
+        orphan_remarks: >-
+          {%
+            set orphans = [] %}
+          {%
+            for idx in range(0, acl_lines | length) %}
+            {%
+              set line = acl_lines[idx] %}
+            {%
+              if line is match('^access-list ' ~ acl_name ~ ' remark') %}
+                {# Prüfen, ob nächste Zeile existiert und eine ACE ist #}
+                {%
+                  if idx + 1 >= (acl_lines | length)
+                     or not (acl_lines[idx+1] is match('^access-list ' ~ acl_name ~ ' extended')) %}
+                    {%
+                      set _ = orphans.append(line) %}
+                  {%
+                  endif %}
+            {%
+              endif %}
+          {%
+            endfor %}
+          {{ orphans }}
+
+    - name: Debug orphan remarks (optional)
+      debug:
+        msg: "Deleting orphan remark: {{ item }}"
+      loop: "{{ orphan_remarks }}"
+
+    - name: Remove orphan remarks from ASA
+      asa_config:
+        lines: "{{ orphan_remarks | map('regex_replace', '^access-list ', 'no access-list ') | list }}"
+        match: none
+      when: orphan_remarks | length > 0
