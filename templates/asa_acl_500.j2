@@ -1,5 +1,5 @@
 {# Time-range Definition #}
-time-range 01.04.2025
+time-range 01.05.2025
  periodic weekdays 08:00 to 18:00
 
 {# Dynamisch 500 Regeln erzeugen #}
@@ -16,10 +16,10 @@ time-range 01.04.2025
 {% endif %}
 
 {# Beispielhafte Source/Destination #}
-{% set src_ip = "192.1.2." ~ (i % 254 + 1) %}
-{% set dst_ip = "198.52.100." ~ (i % 254 + 1) %}
+{% set src_ip = "192.2.2." ~ (i % 254 + 1) %}
+{% set dst_ip = "198.52.102." ~ (i % 254 + 1) %}
 
 access-list {{ acl_name }} remark Rule {{ "%03d"|format(i) }} - Auto generated rule {{ i }}
-access-list {{ acl_name }} extended permit {{ proto }} {{ src_ip }} 255.255.255.255 {{ dst_ip }} 255.255.255.255{% if port %} eq {{ port }}{% endif %} time-range 01.03.2025
+access-list {{ acl_name }} extended permit {{ proto }} {{ src_ip }} 255.255.255.255 {{ dst_ip }} 255.255.255.255{% if port %} eq {{ port }}{% endif %} time-range 01.05.2025
 
 {% endfor %}
