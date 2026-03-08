@@ -21,9 +21,11 @@
           - show access-list {{ acl_name }}
       register: acl_output
 
+    - debug: var=acl_output.stdout_lines
+
     - name: Convert ACL output into list of lines
       set_fact:
-        acl_lines: "{{ acl_output.response[0].split('\n') | map('trim') | list }}"
+        acl_lines: "{{ acl_output.stdout_lines[0].split('\n') | map('trim') | list }}"
 
     - name: Find orphan remarks (remarks without following ACE)
       set_fact:
