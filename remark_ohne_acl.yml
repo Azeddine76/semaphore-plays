@@ -14,9 +14,6 @@
     ansible_become: true
     ansible_become_method: enable
 
-  vars:
-    acl_name: global_access
-
   tasks:
 
     - name: Get ACL from ASA
