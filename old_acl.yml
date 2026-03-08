@@ -1,0 +1,52 @@
+---
+- name: Entfernt alte ASA-Regeln und zugehörige Remarks basierend auf Time-Range
+  hosts: asa_firewalls
+  connection: network_cli
+  gather_facts: no
+
+  vars:
+    time_range_name: "OLD_TIMERANGE"
+    acl_name: "OUTSIDE-IN"
+
+  tasks:
+
+    - name: ACL-Einträge anzeigen, die die alte Time-Range nutzen
+      cisco.asa.asa_command:
+        commands:
+          - "show access-list {{ acl_name }}"
+      register: acl_output
+
+    - name: Extrahiere betroffene ACL-Lines (Regeln + Remarks)
+      set_fact:
+        lines_to_remove: >-
+          {{
+            acl_output.stdout[0].split('\n')
+            | select('search', time_range_name)
+            | list
+          }}
+
+    - name: Extrahiere zugehörige Remarks
+      set_fact:
+        remark_lines: >-
+          {{
+            acl_output.stdout[0].split('\n')
+            | select('search', 'remark')
+            | select('search', acl_name)
+            | list
+          }}
+
+    - name: Kombiniere Regel- und Remark-Lines
+      set_fact:
+        all_remove: "{{ lines_to_remove + remark_lines }}"
+
+    - name: Entferne betroffene ACL-Einträge (Regeln + Remarks)
+      cisco.asa.asa_config:
+        lines:
+          - "no {{ item | regex_replace('^access-list ', '') }}"
+      loop: "{{ all_remove }}"
+      when: all_remove | length > 0
+
+    - name: Entferne die alte Time-Range
+      cisco.asa.asa_config:
+        lines:
+          - "no time-range {{ time_range_name }}"

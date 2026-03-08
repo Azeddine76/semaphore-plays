@@ -1,0 +1,34 @@
+---
+- name: Configure ASA ACL with many rules, remarks and time-range
+  hosts: asa
+  connection: network_cli
+  gather_facts: no
+
+  vars:
+    acl_name: global_access
+    time_range_name: 01.03.2025
+
+  tasks:
+
+    - name: Define time-range
+      asa_config:
+        lines:
+          - time-range {{ time_range_name }}
+          - periodic weekdays 08:00 to 18:00
+        match: none
+
+    - name: Configure ACL with 50+ rules
+      asa_config:
+        parents: "access-list {{ acl_name }} extended"
+        lines:
+          {% for i in range(1, 51) %} 
+          - remark Rule {{ i }} description
+          - permit tcp 192.0.2.{{ i }} 255.255.255.255 any eq 80 time-range {{ time_range_name }}
+          {% endfor %}
+        match: none
+
+    - name: Apply ACL to interface
+      asa_config:
+        lines:
+          - access-group {{ acl_name }} global
+        match: none
