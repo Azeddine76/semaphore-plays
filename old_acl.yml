@@ -5,11 +5,10 @@
   gather_facts: no
 
   vars:
-    time_range_name: "OLD_TIMERANGE"
-    acl_name: "OUTSIDE-IN"
+    time_range_name: "01.03.2025"
+    acl_name: "global_access"
 
   tasks:
-
     - name: ACL-Einträge anzeigen, die die alte Time-Range nutzen
       cisco.asa.asa_command:
         commands:
