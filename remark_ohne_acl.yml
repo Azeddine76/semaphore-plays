@@ -15,7 +15,6 @@
     ansible_become_method: enable
 
   tasks:
-
     - name: Get ACL from ASA
       asa_config:
         commands:
@@ -24,7 +23,7 @@
 
     - name: Convert ACL output into list of lines
       set_fact:
-        acl_lines: "{{ acl_output.stdout[0].split('\n') | map('trim') | list }}"
+        acl_lines: "{{ acl_output.response[0].split('\n') | map('trim') | list }}"
 
     - name: Find orphan remarks (remarks without following ACE)
       set_fact:

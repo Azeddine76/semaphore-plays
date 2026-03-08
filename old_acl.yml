@@ -25,7 +25,7 @@
       set_fact:
         lines_to_remove: >-
           {{
-            acl_output.stdout[0].split('\n')
+            acl_output.response[0].split('\n')
             | select('search', time_range_name)
             | list
           }}
@@ -34,7 +34,7 @@
       set_fact:
         remark_lines: >-
           {{
-            acl_output.stdout[0].split('\n')
+            acl_output.response[0].split('\n')
             | select('search', 'remark')
             | select('search', acl_name)
             | list

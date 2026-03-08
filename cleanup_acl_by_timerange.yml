@@ -24,7 +24,7 @@
 
     - name: Convert ACL output into list
       set_fact:
-        acl_lines: "{{ acl_output.stdout[0].split('\n') | map('trim') | list }}"
+        acl_lines: "{{ acl_output.response[0].split('\n') | map('trim') | list }}"
 
     - name: Identify ACEs using the target time-range
       set_fact:
