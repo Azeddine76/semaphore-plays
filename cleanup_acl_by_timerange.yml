@@ -1,0 +1,70 @@
+---
+- name: Remove ASA ACL rules with specific time-range including remarks
+  hosts: asa
+  connection: network_cli
+  gather_facts: no
+  collections:
+    - community.general
+    - cisco.asa
+
+  vars:
+    acl_name: global_access
+    target_timerange: "01.03.2025"
+    ansible_network_os: cisco.asa.asa
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_become: true
+    ansible_become_method: enable
+
+  tasks:
+    - name: Get ACL from ASA
+      asa_config:
+        commands:
+          - show access-list {{ acl_name }}
+      register: acl_output
+
+    - name: Convert ACL output into list
+      set_fact:
+        acl_lines: "{{ acl_output.stdout[0].split('\n') | map('trim') | list }}"
+
+    - name: Identify ACEs using the target time-range
+      set_fact:
+        aces_to_delete: >-
+          {{
+            acl_lines
+            | select('match', '^access-list ' ~ acl_name ~ ' extended .* time-range ' ~ target_timerange)
+            | list
+          }}
+
+    - name: Identify remarks directly above those ACEs
+      set_fact:
+        remarks_to_delete: >-
+          {%
+            set remarks = [] %}
+          {%
+            for ace in aces_to_delete %}
+            {%
+              set idx = acl_lines.index(ace) %}
+            {%
+              if idx > 0 and (acl_lines[idx-1] is match('^access-list ' ~ acl_name ~ ' remark')) %}
+                {%
+                  set _ = remarks.append(acl_lines[idx-1]) %}
+            {%
+              endif %}
+          {%
+            endfor %}
+          {{ remarks }}
+
+    - name: Combine ACEs + remarks to delete
+      set_fact:
+        delete_list: "{{ aces_to_delete + remarks_to_delete }}"
+
+    - name: Debug (optional)
+      debug:
+        msg: "Deleting: {{ item }}"
+      loop: "{{ delete_list }}"
+
+    - name: Remove ACEs and remarks from ASA
+      asa_config:
+        lines: "{{ delete_list | map('regex_replace', '^access-list ', 'no access-list ') | list }}"
+        match: none
+      when: delete_list | length > 0
