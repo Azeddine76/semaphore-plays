@@ -22,7 +22,7 @@
 
     - name: Extract ACL lines into list
       set_fact:
-        acl_lines: "{{ acl_output.stdout[0].split('\n') }}"
+        acl_lines: "{{ acl_output.split('\n') }}"
 
     - name: Identify orphan remarks
       set_fact:
