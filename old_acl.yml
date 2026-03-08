@@ -1,8 +1,18 @@
 ---
 - name: Entfernt alte ASA-Regeln und zugehörige Remarks basierend auf Time-Range
-  hosts: asa_firewalls
+  hosts: asa
   connection: network_cli
   gather_facts: no
+  collections:
+    - community.general
+    - cisco.asa
+
+  vars:
+    acl_name: global_access
+    ansible_network_os: cisco.asa.asa
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_become: true
+    ansible_become_method: enable
 
   vars:
     time_range_name: "01.03.2025"
