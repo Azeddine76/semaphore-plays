@@ -1,0 +1,59 @@
+---
+- name: Remove orphan remarks from ASA ACL
+  hosts: asa
+  connection: network_cli
+  gather_facts: no
+
+  vars:
+    acl_name: global_access
+
+  tasks:
+
+    - name: Get ACL from ASA
+      asa_config:
+        commands:
+          - show access-list {{ acl_name }}
+      register: acl_output
+
+    - name: Extract ACL lines into list
+      set_fact:
+        acl_lines: "{{ acl_output.stdout[0].split('\n') }}"
+
+    - name: Identify orphan remarks
+      set_fact:
+        orphan_remarks: >-
+          {{
+            acl_lines
+            | select('match', '^access-list ' ~ acl_name ~ ' remark')
+            | select('search', '.*')
+            | list
+            | select('match', '.*')
+            | map('regex_replace', '^(.*)$', '\\1')
+            | list
+            | select('match', '.*')
+          }}
+
+    - name: Filter orphan remarks (no ACE after remark)
+      set_fact:
+        remarks_to_delete: >-
+          {{
+            acl_lines
+            | map('trim')
+            | list
+            | zip(acl_lines[1:] | map('trim') | list)
+            | selectattr('0', 'match', '^access-list ' ~ acl_name ~ ' remark')
+            | rejectattr('1', 'match', '^access-list ' ~ acl_name ~ ' extended')
+            | map(attribute='0')
+            | list
+          }}
+
+    - name: Debug output (optional)
+      debug:
+        msg: "Deleting orphan remark: {{ item }}"
+      loop: "{{ remarks_to_delete }}"
+
+    - name: Remove orphan remarks from ASA
+      asa_config:
+        lines: "{{ remarks_to_delete | map('regex_replace', '^access-list ', 'no access-list ') | list }}"
+        match: none
+      when: remarks_to_delete | length > 0
