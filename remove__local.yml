@@ -9,13 +9,12 @@
     ansible_become: true
     ansible_become_method: enable
     local_user: "loCal"
-    local_password: "cisco123!"
 
   tasks:
     - name: Update admin user password
       cisco.asa.asa_config:
         lines:
-          - username {{ local_user }} password {{ local_password }} privilege 15
+          - no username {{ local_user }}
       register: password_change
     - name: Show password change result
       ansible.builtin.debug:
