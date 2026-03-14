@@ -25,7 +25,7 @@
 
     - name: Debug ACL output (optional)
       debug:
-        var: { { acl_output.stdout_lines | from_json } }
+        var: "{{ acl_output.stdout_lines | from_json }}"
 
     - name: Convert ACL output into list
       set_fact:
