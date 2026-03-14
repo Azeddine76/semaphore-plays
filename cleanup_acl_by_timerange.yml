@@ -19,8 +19,9 @@
     - name: Get ACL from ASA
       cisco.asa.asa_config:
         commands:
-          - "terminal pager 0"
-          - "show access-list {{ acl_name }}"
+          - terminal pager 0
+          - show access-list {{ acl_name }}
+          - show access-list {{ acl_name }} | include time-range {{ target_timerange }}
       register: acl_output
 
     - name: Debug ACL output (optional)
