@@ -4,7 +4,6 @@ collections:
   - community.general
   - cisco.asa
   - ansible.netcommon
-  - ansible.pylibssh
   - ansible.utils
   # Install a specific version from Ansible Galaxy
   - name: community.general
