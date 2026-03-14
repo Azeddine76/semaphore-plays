@@ -17,14 +17,15 @@
 
   tasks:
     - name: Get ACL from ASA
-      asa_config:
+      cisco.asa.asa_config:
         commands:
           - "terminal pager 0"
           - "show access-list {{ acl_name }}"
       register: acl_output
 
     - name: Debug ACL output (optional)
-      debug: var=acl_output.stdout_lines
+      debug:
+        var: acl_output
 
     - name: Convert ACL output into list
       set_fact:
