@@ -20,6 +20,10 @@
           - show access-list {{ acl_name }}
       register: acl_output
 
+    - name: Debug ACL output (optional)
+      debug:
+        var: acl_output
+
     - name: Extract ACL lines into list
       set_fact:
         acl_lines: "{{ acl_output.split('\n') }}"
