@@ -29,7 +29,7 @@
         commands:
           - terminal pager 0
           - show access-list {{ acl_name }}
-      register: acl_output
+        register: acl_output
 
     - name: Debug ACL output (optional)
       debug:
