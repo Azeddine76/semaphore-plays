@@ -31,11 +31,20 @@
           - show access-list {{ acl_name }}
       register: acl_output
 
-    - debug: var=acl_output.stdout_lines
+    - name: Debug ACL output (optional)
+      debug:
+        var: acl_output
 
     - name: Convert ACL output into list
       set_fact:
-        acl_lines: "{{ acl_output.stdout_lines | default([]) | map('trim') | list }}"
+        acl_lines: >-
+          {{
+            acl_output.stdout_lines
+            | default(acl_output.stdout)
+            | default(acl_output.result.stdout_lines)
+            | default(acl_output.result.stdout)
+            | default([])
+          }}
 
     - name: debug ACL lines (optional)
       debug:
