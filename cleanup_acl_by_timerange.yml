@@ -31,9 +31,7 @@
           - show access-list {{ acl_name }}
       register: acl_output
 
-    - name: Debug ACL output (optional)
-      debug:
-        var: "{{ acl_output.stdout_lines | from_json }}"
+    - debug: var=acl_output.stdout_lines
 
     - name: Convert ACL output into list
       set_fact:
