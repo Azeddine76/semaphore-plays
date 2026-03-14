@@ -19,8 +19,8 @@
     - name: Get ACL from ASA
       asa_config:
         commands:
-          - terminal pager 0
-          - show access-list {{ acl_name }}
+          - "terminal pager 0"
+          - "show access-list {{ acl_name }}"
       register: acl_output
 
     - name: Debug ACL output (optional)
