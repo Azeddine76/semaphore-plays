@@ -30,6 +30,10 @@
       set_fact:
         acl_lines: "{{ acl_output.stdout_lines | default([]) | map('trim') | list }}"
 
+    - name: debug ACL lines (optional)
+      debug:
+        var: acl_lines
+
     - name: Identify ACEs using the target time-range
       set_fact:
         aces_to_delete: >-
