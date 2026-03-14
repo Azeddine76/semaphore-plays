@@ -4,6 +4,7 @@
   gather_facts: no
   collections:
     - community.general
+    - ansible.netcommon
     - cisco.asa
 
   vars:
@@ -26,7 +27,7 @@
 
     - name: Extract ACL lines into list
       set_fact:
-        acl_lines: "{{ acl_output.stdout_lines[0] | map('trim') | list }}"
+        acl_lines: "{{ acl_output.stdout_lines | default([]) }}"
 
     - name: Identify orphan remarks
       set_fact:
