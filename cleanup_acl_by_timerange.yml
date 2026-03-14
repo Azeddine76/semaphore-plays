@@ -24,8 +24,7 @@
       register: acl_output
 
     - name: Debug ACL output (optional)
-      debug:
-        var: acl_output.stdout_lines
+      debug: var=acl_output.stdout_lines
 
     - name: Convert ACL output into list
       set_fact:
