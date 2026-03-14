@@ -21,12 +21,11 @@
         commands:
           - terminal pager 0
           - show access-list {{ acl_name }}
-          - show access-list {{ acl_name }} | include time-range {{ target_timerange }}
       register: acl_output
 
     - name: Debug ACL output (optional)
       debug:
-        var: acl_output
+        var: { { acl_output.stdout_lines | from_json } }
 
     - name: Convert ACL output into list
       set_fact:
