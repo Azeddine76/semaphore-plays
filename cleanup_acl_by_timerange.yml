@@ -30,9 +30,14 @@
           - show access-list {{ acl_name }}
       register: acl_output
 
+      acl_output:
+        failed: true
+        msg:
+          error: "Command authorization failed"
+
     - name: Debug ACL output (optional)
       debug:
-        msg: "ACL Output: {{ acl_output.stdout }}"
+        msg: "ACL Output: {{ acl_output }}"
 
     - name: Convert ACL output into list
       set_fact:
