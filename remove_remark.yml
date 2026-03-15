@@ -41,6 +41,7 @@
         acl_config: >-
           {{
             acl_lines
+            | map('trim')
             | select('match', '^access-list ')
             | list
           }}
