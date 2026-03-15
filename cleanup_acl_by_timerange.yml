@@ -32,7 +32,7 @@
 
     - name: Debug ACL output (optional)
       debug:
-        msg: "ACL Output: {{ acl_output.stdout.0 }}"
+        msg: "ACL Output: {{ acl_output.stdout }}"
 
     - name: Convert ACL output into list
       set_fact:
