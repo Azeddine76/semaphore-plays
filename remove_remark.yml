@@ -31,6 +31,13 @@
             | default([])
           }}
 
+    - name: DEBUG Show lines that match access-list
+      debug:
+        msg: "{{ item }}"
+      loop: "{{ acl_lines | map('trim') | list }}"
+      when: item is search('^access-list ')
+
+
     - name: Debug normalized ACL lines (optional)
       debug:
         var: acl_lines
@@ -40,7 +47,7 @@
       set_fact:
         acl_config: >-
           {{
-            acl_lines.stdoout_lines
+            acl_lines
             | map('trim')
             | select('match', '^access-list ')
             | list
