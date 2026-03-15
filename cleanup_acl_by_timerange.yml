@@ -36,14 +36,7 @@
 
     - name: Convert ACL output into list
       set_fact:
-        acl_lines: >-
-          {{
-            acl_output.stdout_lines
-            | default(acl_output.stdout)
-            | default(acl_output.result.stdout_lines)
-            | default(acl_output.result.stdout)
-            | default([])
-          }}
+        acl_lines: "{{ acl_output.stdout[0].split('\n') | map('trim') | list }}"
 
     - name: debug ACL lines (optional)
       debug:
