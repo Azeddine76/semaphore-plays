@@ -17,6 +17,10 @@
           - "show access-list {{ acl_name }}"
       register: acl_raw
 
+    - name: Debug raw ACL output (optional)
+      debug:
+        var: acl_raw
+
     # 2) Output robust extrahieren (egal ob stdout oder stdout_lines)
     - name: Normalize ASA output
       set_fact:
@@ -27,6 +31,10 @@
             | default([])
           }}
 
+    - name: Debug normalized ACL lines (optional)
+      debug:
+        var: acl_lines
+
     # 3) Nur echte ACL-Zeilen extrahieren
     - name: Extract ACL config lines
       set_fact:
@@ -36,6 +44,10 @@
             | select('match', '^access-list ')
             | list
           }}
+
+    - name: Debug extracted ACL config lines (optional)
+      debug:
+        var: acl_config
 
     # 4) Doppelte remark-Zeilen entfernen (gleicher Text → nur 1x behalten)
     - name: Remove duplicate remark lines
@@ -57,6 +69,10 @@
           {%- endfor -%}
           {{ out }}
 
+    - name: Debug cleaned ACL lines (optional)
+      debug:
+        var: acl_clean
+
     # 5) ACL neu aufbauen (ASA erwartet nur den Teil nach dem ACL-Namen)
     - name: Prepare ACL for asa_config
       set_fact:
@@ -67,8 +83,16 @@
             | list
           }}
 
+    - name: Debug ACL render lines (optional)
+      debug:
+        var: acl_render
+
     # 6) ACL auf ASA ersetzen
     - name: Replace ACL on ASA
       cisco.asa.asa_config:
         before: "clear configure access-list {{ acl_name }}"
         lines: "{{ acl_render | map('regex_replace', '^(.*)$', 'access-list ' ~ acl_name ~ ' \\1') | list }}"
+
+    - name: Debug completion message
+      debug:
+        msg: "Duplicate remark lines removed and ACL {{ acl_name }} updated on ASA."
