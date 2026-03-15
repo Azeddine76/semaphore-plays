@@ -25,15 +25,10 @@
     - debug: var=version.stdout_lines
 
     - name: Get ACL from ASA
-      cisco.asa.asa_config:
+      cisco.asa.asa_command:
         commands:
           - show access-list {{ acl_name }}
-        failed: true
-        msg:
-          error: "Command authorization failed"
-      register: acl_output
-
-      acl_output:
+      register: acl_output      
 
     - name: Debug ACL output (optional)
       debug:
