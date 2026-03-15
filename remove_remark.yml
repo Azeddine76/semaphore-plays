@@ -1,0 +1,70 @@
+---
+- name: Remove duplicate remark lines from ASA ACL
+  hosts: asa
+  gather_facts: no
+  vars:
+    acl_name: "global_access"
+
+  tasks:
+    # 1) ACL auslesen
+    - name: Read ACL from ASA
+      cisco.asa.asa_command:
+        commands:
+          - "show access-list {{ acl_name }}"
+      register: acl_raw
+
+    # 2) Output robust extrahieren (egal ob stdout oder stdout_lines)
+    - name: Normalize ASA output
+      set_fact:
+        acl_lines: >-
+          {{
+            acl_raw.stdout_lines
+            | default(acl_raw.stdout)
+            | default([])
+          }}
+
+    # 3) Nur echte ACL-Zeilen extrahieren
+    - name: Extract ACL config lines
+      set_fact:
+        acl_config: >-
+          {{
+            acl_lines
+            | select('match', '^access-list ')
+            | list
+          }}
+
+    # 4) Doppelte remark-Zeilen entfernen (gleicher Text → nur 1x behalten)
+    - name: Remove duplicate remark lines
+      vars:
+        seen: []
+      set_fact:
+        acl_clean: >-
+          {%- set out = [] -%}
+          {%- for line in acl_config -%}
+            {%- if line is match('^access-list ' ~ acl_name ~ ' remark (.*)$') -%}
+              {%- set remark = line | regex_replace('^access-list ' ~ acl_name ~ ' remark (.*)$', '\\1') -%}
+              {%- if remark not in seen -%}
+                {%- set _ = seen.append(remark) -%}
+                {%- set _ = out.append(line) -%}
+              {%- endif -%}
+            {%- else -%}
+              {%- set _ = out.append(line) -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {{ out }}
+
+    # 5) ACL neu aufbauen (ASA erwartet nur den Teil nach dem ACL-Namen)
+    - name: Prepare ACL for asa_config
+      set_fact:
+        acl_render: >-
+          {{
+            acl_clean
+            | map('regex_search', '^access-list ' ~ acl_name ~ ' (.*)$', '\\1')
+            | list
+          }}
+
+    # 6) ACL auf ASA ersetzen
+    - name: Replace ACL on ASA
+      cisco.asa.asa_config:
+        before: "clear configure access-list {{ acl_name }}"
+        lines: "{{ acl_render | map('regex_replace', '^(.*)$', 'access-list ' ~ acl_name ~ ' \\1') | list }}"
