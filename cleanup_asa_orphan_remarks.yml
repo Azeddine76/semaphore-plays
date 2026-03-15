@@ -23,11 +23,11 @@
 
     - name: Debug ACL output (optional)
       debug:
-        var: acl_output
+        var: acl_output.stdout_lines
 
     - name: Extract ACL lines into list
       set_fact:
-        acl_lines: "{{ acl_output.stdout_lines | default([]) }}"
+        acl_lines: "{{ acl_output.stdout_lines[0].split('\n') | map('trim') | list }}"
 
     - name: Identify orphan remarks
       set_fact:
