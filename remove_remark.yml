@@ -4,6 +4,10 @@
   gather_facts: no
   vars:
     acl_name: "global_access"
+    ansible_network_os: cisco.asa.asa
+    ansible_connection: ansible.netcommon.network_cli
+    ansible_become: true
+    ansible_become_method: enable
 
   tasks:
     # 1) ACL auslesen
