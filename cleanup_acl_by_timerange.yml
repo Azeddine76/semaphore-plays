@@ -28,11 +28,11 @@
       cisco.asa.asa_command:
         commands:
           - show access-list {{ acl_name }}
-      register: acl_output      
+      register: acl_output
 
     - name: Debug ACL output (optional)
       debug:
-        var: acl_output
+        var: acl_output_lines
 
     - name: Convert ACL output into list
       set_fact:
