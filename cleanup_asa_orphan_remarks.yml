@@ -16,7 +16,7 @@
 
   tasks:
     - name: Get ACL from ASA
-      asa_config:
+      asa_command:
         commands:
           - show access-list {{ acl_name }}
       register: acl_output
