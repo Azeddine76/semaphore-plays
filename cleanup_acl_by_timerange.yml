@@ -28,12 +28,12 @@
       cisco.asa.asa_config:
         commands:
           - show access-list {{ acl_name }}
-      register: acl_output
-
-      acl_output:
         failed: true
         msg:
           error: "Command authorization failed"
+      register: acl_output
+
+      acl_output:
 
     - name: Debug ACL output (optional)
       debug:
