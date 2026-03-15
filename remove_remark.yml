@@ -46,12 +46,13 @@
     - name: Extract ACL config lines
       set_fact:
         acl_config: >-
-          {{
+          loop: "{{
             acl_lines
             | map('trim')
             | select('match', '^access-list ')
             | list
-          }}
+          }}"
+          when: acl_lines | length > 0
 
     - name: Debug extracted ACL config lines (optional)
       debug:
